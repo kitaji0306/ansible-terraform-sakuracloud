@@ -1,0 +1,36 @@
+  - name: mkdir exec dir
+    file:
+      path: /var/tmp/test
+      state: directory
+
+  - name: download and unzip terraform
+    unarchive:
+      src: https://releases.hashicorp.com/terraform/0.11.10/terraform_0.11.10_linux_amd64.zip
+      dest: /var/tmp/test
+      remote_src: yes
+
+  - name: download and unzip terraform-provider-sakuracloud
+    unarchive:
+      src: https://github.com/sacloud/terraform-provider-sakuracloud/releases/download/v1.8.0/terraform-provider-sakuracloud_1.8.0_linux-amd64.zip
+      dest: /var/tmp/test
+      remote_src: yes
+
+  - name: copy tf file
+    copy:
+      src: sakura.tf
+      dest: /var/tmp/test
+      backup: yes
+
+  - name: terraform apply
+    terraform:
+      project_path: /var/tmp/test
+      state: present
+      binary_path: /var/tmp/test/terraform
+      force_init: yes
+    register: result
+
+  - name: show result
+    debug:
+      var: result.stdout_lines
+
+
